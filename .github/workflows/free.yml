@@ -4,21 +4,36 @@ jobs:
   push:
     runs-on: ubuntu-latest
     steps:
-      - name: Free disk space
+      - name: Init
         run: |
           echo "$GITHUB_WORKSPACE"
           df -h
+      - name: "Remove swap"
+        run: |
           sudo swapoff -a
           sudo rm -f /swapfile
           df -h
+      - name: "Remove boost & tools"
+        run: |
           sudo rm -rf "/usr/local/share/boost"
           sudo rm -rf "$AGENT_TOOLSDIRECTORY"
           df -h
+      - name: "Remove dotnet"
+        run: |
           sudo rm -rf /usr/share/dotnet/shared/
           sudo rm -rf /usr/share/dotnet/host/
           sudo rm -rf /usr/share/dotnet/sdk/
           df -h
-          sudo apt clean
+      - name: "Remove android"
+        run: |
+          sudo rm -rf "$ANDROID_SDK_ROOT"
+          sudo rm -rf /usr/local/lib/android
           df -h
+      - name: "apt-get clean"
+        run: |
+          sudo apt-get clean
+          df -h
+      - name: "Remove docker images"
+        run: |
           docker rmi $(docker image ls -aq)
           df -h
